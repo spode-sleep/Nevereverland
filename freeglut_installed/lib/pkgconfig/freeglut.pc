@@ -1,0 +1,10 @@
+prefix=D:/CG_Boldarev_IDB-16-01\freeglut_installed
+libdir=D:/CG_Boldarev_IDB-16-01\freeglut_installed/lib
+includedir=${prefix}/include
+
+Name: glut
+Description: A freely licensed and improved alternative to the GLUT library
+Version: 3.0.0
+Libs: -L${libdir} -lglut
+Libs.private: -lopengl32 -lwinmm -lgdi32 -lm
+Cflags: -I${includedir} 

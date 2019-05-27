@@ -1,0 +1,3 @@
+D:/Lab2/project/CMakeFiles/Lights_and_textures.dir
+D:/Lab2/project/CMakeFiles/ALL_BUILD.dir
+D:/Lab2/project/CMakeFiles/ZERO_CHECK.dir

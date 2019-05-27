@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Lab2\CMake_Lighting\Light_and_textures\laba4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Lab2\CMake_Lighting\Light_and_textures\readBMP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Lab2\CMake_Lighting\Light_and_textures\GL_movement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Lab2\CMake_Lighting\Light_and_textures\readBMP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\CMakeLists.txt">
+      <Filter>Other Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\bar_wall.bmp">
+      <Filter>Images for textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\common_wall.bmp">
+      <Filter>Images for textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\song_list.bmp">
+      <Filter>Images for textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\piano.bmp">
+      <Filter>Images for textures</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Lab2\CMake_Lighting\key.bmp">
+      <Filter>Images for textures</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{529F02D9-07B3-3C5A-8B67-B6509B7AC65B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{A619912A-84D7-398B-AB8A-BB6096032ED9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Images for textures">
+      <UniqueIdentifier>{A8F41999-E91D-3D98-9DBD-9714A9C5417E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other Files">
+      <UniqueIdentifier>{52F79B61-1DAD-37F6-A8B6-77578B8B7F78}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

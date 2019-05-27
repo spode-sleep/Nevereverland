@@ -1,0 +1,1928 @@
+struct texture_dictionary
+{
+	char path[100];
+	int* srcImage;
+};
+
+struct Point
+{
+	float x;
+	float y;
+};
+
+struct Vector3D {
+	float x;
+	float y;
+	float z;
+};
+
+struct speech
+{
+	char charName[10];
+	char str[1010];
+};
+
+struct scriptline
+{
+	char function[30];
+	char arguments[1010];
+};
+
+
+struct Point3D
+{
+	float x;
+	float y;
+	float z;
+};
+
+struct drink
+{
+	char name[30];
+	int red;
+	int yellow;
+	int blue;
+	int green;
+	int white;
+	int ice;
+	int age;
+	int state;
+	int OptKarmotrine;
+};
+
+struct drop_components
+{
+	float red;
+	float white;
+	float yellow;
+	float green;
+	float blue;
+};
+
+struct Bottle
+{
+	int type;
+	float height;
+	float colors[3];
+	Point3D position;
+};
+
+class RowOfBottles
+{
+	Bottle* array_of_bottles;
+	int count_of_bottles;
+
+public:
+
+	RowOfBottles(int count) :count_of_bottles(count)
+	{
+		array_of_bottles = (Bottle*)malloc(sizeof(Bottle)*count_of_bottles);
+	};
+
+	RowOfBottles() {};
+
+	void GenerateRow();
+
+	void GetBottlesArray(Bottle* data)
+	{
+		data = (Bottle*)malloc(sizeof(Bottle)*count_of_bottles);
+		for (int i = 0; i < count_of_bottles; i++)
+			data[i] = array_of_bottles[i];
+	}
+
+	void DrawBottlesArray();
+};
+
+void RowOfBottles::GenerateRow()
+{
+	for (int i = 0; i > -count_of_bottles; i--)
+	{
+		array_of_bottles[-i].type = rand() % 3;
+		array_of_bottles[-i].position.x = 0.5;
+		array_of_bottles[-i].position.y = i;
+		array_of_bottles[-i].colors[0] = rand() % 255 / 255.;
+		array_of_bottles[-i].colors[1] = rand() % 255 / 255.;
+		array_of_bottles[-i].colors[2] = rand() % 255 / 255.;
+		switch (array_of_bottles[-i].type)
+		{
+		case 0:array_of_bottles[-i].height = rand() % 3; break;
+		case 1:
+		case 2:
+			array_of_bottles[-i].height = rand() % 2 + 1; break;
+		}
+	}
+}
+
+void RowOfBottles::DrawBottlesArray()
+{
+	for (int i = 0; i < count_of_bottles; i++)
+	{
+		glPushMatrix();
+		glTranslatef(array_of_bottles[i].position.x, array_of_bottles[i].position.y, 0);
+		switch (array_of_bottles[i].type)
+		{
+		case 0:DrawBottleType1(array_of_bottles[i].height, array_of_bottles[i].colors); break;
+		case 1:DrawBottleType2(array_of_bottles[i].height, array_of_bottles[i].colors); break;
+		case 2:DrawBottleType3(array_of_bottles[i].height, array_of_bottles[i].colors); break;
+		}
+		glPopMatrix();
+	}
+}
+
+class shaker_containment
+{
+	int red;
+	int yellow;
+	int blue;
+	int green;
+	int white;
+	bool isWithIce;
+	bool isAged;
+	bool isShaked;
+	bool isShakedHard;
+
+public:
+
+	shaker_containment() {
+		red = 0;
+		yellow = 0;
+		blue = 0;
+		green = 0;
+		white = 0;
+		isWithIce = 0;
+		isAged = 0;
+		isShaked = 0;
+		isShakedHard = 0;
+	}
+
+	void UpdateComponents(int index_of_bottle);
+
+	void SetIce(bool cond);
+	void SetAge(bool cond);
+	void SetShake(bool cond);
+	void SetHardShake(bool cond);
+
+	void GetComponentsToShow(int comp[6]);
+
+	int GetSumOfComponents();
+
+	void GetAllComponentsToCheck(int comp[8]);
+
+	void Reset();
+};
+
+void shaker_containment::GetComponentsToShow(int comp[6])
+{
+	comp[0] = red;
+	comp[1] = blue;
+	comp[2] = white;
+	comp[3] = yellow;
+	comp[4] = green;
+	comp[5] = red + blue + white + yellow + green;
+}
+
+void shaker_containment::GetAllComponentsToCheck(int comp[8])
+{
+	comp[0] = red;
+	comp[1] = yellow;
+	comp[2] = blue;
+	comp[3] = green;
+	comp[4] = white;
+	comp[5] = isWithIce;
+	comp[6] = isAged;
+	if (isShaked)
+		comp[7] = 1;
+	else if (isShakedHard)
+		comp[7] = 2;
+	else
+		comp[7] = 0;
+}
+
+int shaker_containment::GetSumOfComponents()
+{
+	return red + blue + white + yellow + green;
+}
+
+void shaker_containment::UpdateComponents(int index_of_bottle)
+{
+	if (red + blue + white + yellow + green < 20)
+		switch (index_of_bottle)
+		{
+		case 0:
+			red++;
+			break;
+		case 1:
+			blue++;
+			break;
+		case 2:
+			white++;
+			break;
+		case 3:
+			yellow++;
+			break;
+		case 4:
+			green++;
+			break;
+		}
+}
+
+void shaker_containment::SetIce(bool cond)
+{
+	isWithIce = cond;
+}
+void shaker_containment::SetAge(bool cond)
+{
+	isAged = cond;
+}
+void shaker_containment::SetShake(bool cond)
+{
+	isShaked = cond;
+}
+void shaker_containment::SetHardShake(bool cond)
+{
+	isShakedHard = cond;
+}
+
+void shaker_containment::Reset() {
+	red = 0;
+	yellow = 0;
+	blue = 0;
+	green = 0;
+	white = 0;
+	isWithIce = 0;
+	isAged = 0;
+	isShaked = 0;
+	isShakedHard = 0;
+}
+
+class ArcCustom
+{
+	Point start_of_arc;
+	Point end_of_arc;
+	float radius;
+
+public:
+	ArcCustom(float sx, float sy, float ex, float ey, float radius) :radius(radius)
+	{
+		start_of_arc.x = sx;
+		start_of_arc.y = sy;
+		end_of_arc.x = ex;
+		end_of_arc.y = ey;
+	}
+	void GenerateArc(Point* &poi_of_arc, int& count_of_elems, bool convex);
+};
+
+void ArcCustom::GenerateArc(Point* &poi_of_arc, int& count_of_elems, bool convex = true)
+{
+	float len_of_chord = sqrt(pow(end_of_arc.x - start_of_arc.x, 2) + pow(end_of_arc.y - start_of_arc.y, 2));
+	float distance_to_center = sqrt(pow(radius, 2) - pow(len_of_chord / 2, 2));
+	Point center_of_chord;
+	center_of_chord.x = (end_of_arc.x + start_of_arc.x) / 2;
+	center_of_chord.y = (end_of_arc.y + start_of_arc.y) / 2;
+	Vector eAB;
+	eAB.x = (end_of_arc.x - center_of_chord.x) / (len_of_chord / 2);
+	eAB.y = (end_of_arc.y - center_of_chord.y) / (len_of_chord / 2);
+	Vector altAC;
+	if (convex)
+	{
+		altAC.x = -eAB.y * distance_to_center;
+		altAC.y = eAB.x * distance_to_center;
+	}
+	else
+	{
+		altAC.x = eAB.y * distance_to_center;
+		altAC.y = -eAB.x * distance_to_center;
+	}
+	Point center_of_circle;
+	center_of_circle.x = altAC.x + center_of_chord.x;
+	center_of_circle.y = altAC.y + center_of_chord.y;
+	float angle_of_start, angle_of_end;
+	if (convex)
+	{
+		angle_of_start = atan2(start_of_arc.y - center_of_circle.y, start_of_arc.x - center_of_circle.x);
+		angle_of_end = atan2(end_of_arc.y - center_of_circle.y, end_of_arc.x - center_of_circle.x);
+	}
+	else
+	{
+		angle_of_end = atan2(start_of_arc.y - center_of_circle.y, start_of_arc.x - center_of_circle.x);
+		angle_of_start = atan2(end_of_arc.y - center_of_circle.y, end_of_arc.x - center_of_circle.x);
+	}
+	float current_angle = angle_of_start;
+	poi_of_arc = (Point*)malloc((int((angle_of_end - angle_of_start) / 0.002) + 2) * sizeof(Point));
+	poi_of_arc[0].x = start_of_arc.x;
+	poi_of_arc[0].y = start_of_arc.y;
+	int i = 1;
+	while (current_angle < angle_of_end)
+	{
+		current_angle += 0.002;
+		poi_of_arc[i].x = center_of_circle.x + radius * cos(current_angle);
+		poi_of_arc[i].y = center_of_circle.y + radius * sin(current_angle);
+		i++;
+	}
+	//poi_of_arc = (Point*)realloc(poi_of_arc, i * sizeof(Point));
+	count_of_elems = i;
+}
+
+class drop
+{
+	float current_x;
+	float current_y;
+	float current_z;
+	float radius_x;
+	float radius_y;
+	float angle;
+	float parallel_height;
+	float speed;
+	int state;
+	bool delete_it;			//c помощью этого провер€ем нужно ли удалить
+	float step;
+	float radius_of_jukebox;
+	float center_of_jukebox_y;
+
+public:
+
+	drop(float start_x, float start_y, float radius1, float radius2, float parallel_height, float center_of_jukebox_y) :current_x(start_x), current_y(start_y), radius_x(radius1), radius_y(radius2), parallel_height(parallel_height), center_of_jukebox_y(center_of_jukebox_y)
+	{
+		angle = pi;
+		state = 1;
+		speed = 0.5;
+		current_z = 1;
+		delete_it = false;
+		step = pi / 180 * speed * 10;
+		radius_of_jukebox = abs(start_y - center_of_jukebox_y);
+	}
+	void Move();
+
+	bool IsDeletable();
+};
+
+void drop::Move()
+{
+	if (state == 3)
+	{
+		current_z -= speed;
+		glPushMatrix();
+		glTranslatef(current_x, current_y, current_z);
+		glColor4d(248 / 255., 180 / 255., 148 / 255., 1);
+		glScalef(radius_x, radius_y, 0.25);
+		glutSolidSphere(1, 15, 15);
+		glPopMatrix();
+		if (current_z <= 1)
+			delete_it = true;
+	}
+	if (state == 2)
+	{
+		angle -= step;
+		current_y = radius_of_jukebox * cos(angle) + center_of_jukebox_y;
+		current_z = radius_of_jukebox * sin(angle) + parallel_height;
+		glPushMatrix();
+		glTranslatef(current_x, current_y, current_z);
+		glRotatef(angle * 180 / pi, 1, 0, 0);
+		glColor4d(248 / 255., 180 / 255., 148 / 255., 1);
+		glScalef(radius_x, radius_y, 0.25);
+		glutSolidSphere(1, 15, 15);
+		glPopMatrix();
+		if (angle <= 0)
+			state = 3;
+	}
+	if (state == 1)
+	{
+		current_z += speed;
+		glPushMatrix();
+		glTranslatef(current_x, current_y, current_z);
+		glColor4d(248 / 255., 180 / 255., 148 / 255., 1);
+		glScalef(radius_x, radius_y, 0.25);				//радиусы по x,y,z
+		glutSolidSphere(1, 15, 15);
+		glPopMatrix();
+		if (current_z >= parallel_height)
+			state = 2;
+	}
+}
+
+bool drop::IsDeletable()
+{
+	return delete_it;
+}
+
+class DiscHolder
+{
+	int serial_number;
+	bool isDiscPlugged;							//установлен ли диск
+	float DiscAngle;
+	float angle;
+	float lower_holder_height;
+
+public:
+
+	DiscHolder(int serial) :serial_number(serial)
+	{
+		isDiscPlugged = false;
+		DiscAngle = 0;
+		angle = 0;
+		lower_holder_height = 0.3;
+	}
+
+	DiscHolder() {}
+
+	void DrawDiscHolder(int& requested_holder, bool& plug, bool &unplug);
+};
+
+class Player
+{
+	Point3D position;
+	bool isAbleToPlayPiano;
+	bool isAbleToUseJukebox;
+	bool isAbleToBartendering;
+	bool isAbleToLeave;
+
+	void CheckAbilities()
+	{
+		if (position.y <= -24 && position.y >= -36 && position.x >= 33 && position.x <= 36)
+			isAbleToLeave = true;
+		else
+			isAbleToLeave = false;
+
+		if (position.y <= -24 && position.y >= -30 && position.x >= -2 && position.x <= 8)
+			isAbleToUseJukebox = true;
+		else
+			isAbleToUseJukebox = false;
+
+		if (position.y <= -13 && position.y >= -16 && position.x >= 27 && position.x <= 36)
+			isAbleToBartendering = true;
+		else
+			isAbleToBartendering = false;
+		if (position.y <= -2.4*position.x - 50.4)
+		{
+			isAbleToPlayPiano = true;
+			position.z = 2;
+		}
+		else
+		{
+			isAbleToPlayPiano = false;
+			position.z = 0;
+		}
+
+		printf("%f %f\n", position.x, position.y);
+	}
+
+public:
+
+	Player(float x, float y);
+
+	Player() {}
+
+	void DrawPlayer();
+
+	void MovePlayer(int direction);
+
+	bool GetAbilityToLeave();
+
+	bool GetAbilityToBartendering();
+
+	bool GetAbilityToUseJukebox();
+
+	bool GetAbilityToPlayPiano();
+};
+
+bool Player::GetAbilityToLeave()
+{
+	return isAbleToLeave;
+}
+
+bool Player::GetAbilityToBartendering()
+{
+	return isAbleToBartendering;
+}
+
+bool Player::GetAbilityToUseJukebox()
+{
+	return isAbleToUseJukebox;
+}
+
+bool Player::GetAbilityToPlayPiano()
+{
+	return isAbleToPlayPiano;
+}
+
+Player::Player(float x, float y) {
+	position.x = x;
+	position.y = y;
+	isAbleToLeave = true;
+	isAbleToPlayPiano = false;
+	isAbleToUseJukebox = false;
+	isAbleToBartendering = false;
+	position.z = 0;
+}
+
+void Player::MovePlayer(int direction)
+{
+	bool clip_flag = false;
+	float borders[11][4] = { {-12,35,16.5,36},
+	{1,12.5,11,16.5},
+	{20,26.5,9.5,15},
+	{22,28.5,-8.5,-0.5},
+	{11.5,17.5,-3,4.5},
+	{9,21,-12,-3},
+	{1.5,8.5,-11,-4},
+	{-36,-28,-2.5,9},
+	{13.5,15,-34,-29},
+	{14,21,-21.5,-17}
+	};
+	Point piano_points[7];
+	piano_points[0].x = -19; piano_points[0].y = -7;
+	piano_points[1].x = -11.5; piano_points[1].y = -30;
+	piano_points[2].x = -19; piano_points[2].y = -30;
+	piano_points[3].x = -32.5; piano_points[3].y = -21;
+	piano_points[4].x = -34; piano_points[4].y = -13;
+	piano_points[5].x = -24.5; piano_points[5].y = -9.5;
+	piano_points[6].x = -19; piano_points[6].y = -7.5;
+	Point piano_chair_points[4];
+	piano_chair_points[0].x = -26; piano_chair_points[0].y = -4.5;
+	piano_chair_points[1].x = -25; piano_chair_points[1].y = -7.5;
+	piano_chair_points[2].x = -30.5; piano_chair_points[2].y = -10;
+	piano_chair_points[3].x = -31.5; piano_chair_points[3].y = -6.5;
+	Point monitor_1_points[4];
+	monitor_1_points[0].x = -31; monitor_1_points[0].y = -29.5;
+	monitor_1_points[1].x = -28; monitor_1_points[1].y = -27.5;
+	monitor_1_points[2].x = -26.5; monitor_1_points[2].y = -34.5;
+	monitor_1_points[3].x = -28; monitor_1_points[3].y = -34;
+	switch (direction)
+	{
+	case GLUT_KEY_UP:
+		for (int i = 0; i < 11; i++)
+			if (position.y - 0.5 > borders[i][0] && position.y - 0.5 < borders[i][1] && position.x > borders[i][2] && position.x < borders[i][3])
+			{
+				clip_flag = true;
+				printf("%d\n", i);
+				break;
+			}
+		if (IsPointInsidePolygon(piano_points, 7, position.x, position.y - 0.5))
+			clip_flag = true;
+		if (IsPointInsidePolygon(piano_chair_points, 4, position.x, position.y - 0.5))
+			clip_flag = true;
+		if (IsPointInsidePolygon(monitor_1_points, 4, position.x, position.y - 0.5))
+			clip_flag = true;
+		if (position.y - 0.5 <= -35.5)
+			clip_flag = true;
+		if (!clip_flag)
+			position.y -= 0.5;
+
+		break;
+	case GLUT_KEY_DOWN:
+		for (int i = 0; i < 11; i++)
+			if (position.y + 0.5 > borders[i][0] && position.y + 0.5 < borders[i][1] && position.x > borders[i][2] && position.x < borders[i][3])
+			{
+				printf("%d\n", i);
+				clip_flag = true;
+				break;
+			}
+		if (IsPointInsidePolygon(piano_points, 7, position.x, position.y + 0.5))
+			clip_flag = true;
+		if (IsPointInsidePolygon(piano_chair_points, 4, position.x, position.y + 0.5))
+			clip_flag = true;
+		if (IsPointInsidePolygon(monitor_1_points, 4, position.x, position.y + 0.5))
+			clip_flag = true;
+		if (position.y + 0.5 >= 35.5)
+			clip_flag = true;
+		if (!clip_flag)
+			position.y += 0.5;
+		break;
+	case GLUT_KEY_RIGHT:
+		for (int i = 0; i < 11; i++)
+			if (position.y > borders[i][0] && position.y < borders[i][1] && position.x - 0.5 > borders[i][2] && position.x - 0.5 < borders[i][3])
+			{
+				printf("%d\n", i);
+				clip_flag = true;
+				break;
+			}
+		if (IsPointInsidePolygon(piano_points, 7, position.x - 0.5, position.y))
+			clip_flag = true;
+		if (IsPointInsidePolygon(piano_chair_points, 4, position.x - 0.5, position.y))
+			clip_flag = true;
+		if (IsPointInsidePolygon(monitor_1_points, 4, position.x - 0.5, position.y))
+			clip_flag = true;
+		if (position.x - 0.5 <= -35.5)
+			clip_flag = true;
+		if (!clip_flag)
+			position.x -= 0.5;
+		break;
+	case GLUT_KEY_LEFT:
+		for (int i = 0; i < 11; i++)
+			if (position.y > borders[i][0] && position.y < borders[i][1] && position.x + 0.5 > borders[i][2] && position.x + 0.5 < borders[i][3])
+			{
+				printf("%d\n", i);
+				clip_flag = true;
+				break;
+			}
+		if (IsPointInsidePolygon(piano_points, 7, position.x + 0.5, position.y))
+			clip_flag = true;
+		if (IsPointInsidePolygon(piano_chair_points, 4, position.x + 0.5, position.y))
+			clip_flag = true;
+		if (IsPointInsidePolygon(monitor_1_points, 4, position.x + 0.5, position.y))
+			clip_flag = true;
+		if (position.x + 0.5 >= 35.5)
+			clip_flag = true;
+		if (!clip_flag)
+			position.x += 0.5;
+		break;
+	}
+	CheckAbilities();
+}
+
+void Player::DrawPlayer()
+{
+	glBegin(GL_QUAD_STRIP);
+	if (isAbleToLeave || isAbleToBartendering || isAbleToPlayPiano || isAbleToUseJukebox)
+		glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	else
+		glColor3f(1, 1, 1);
+	glVertex3f(-1 + position.x, -1 + position.y, 17 + position.z);
+	glVertex3f(-1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(1 + position.x, -1 + position.y, 17 + position.z);
+	glEnd();
+
+	glBegin(GL_TRIANGLE_STRIP);
+	if (isAbleToLeave || isAbleToBartendering || isAbleToPlayPiano || isAbleToUseJukebox)
+		glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	else
+		glColor3f(1, 1, 1);
+	glVertex3f(-1 + position.x, -1 + position.y, 17 + position.z);
+	glVertex3f(-1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(position.x, position.y, position.z);
+	glEnd();
+
+	glBegin(GL_TRIANGLE_STRIP);
+	if (isAbleToLeave || isAbleToBartendering || isAbleToPlayPiano || isAbleToUseJukebox)
+		glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	else
+		glColor3f(1, 1, 1);
+	glVertex3f(-1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(position.x, position.y, position.z);
+	glEnd();
+
+	glBegin(GL_TRIANGLE_STRIP);
+	if (isAbleToLeave || isAbleToBartendering || isAbleToPlayPiano || isAbleToUseJukebox)
+		glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	else
+		glColor3f(1, 1, 1);
+	glVertex3f(1 + position.x, 1 + position.y, 17 + position.z);
+	glVertex3f(1 + position.x, -1 + position.y, 17 + position.z);
+	glVertex3f(position.x, position.y, position.z);
+	glEnd();
+
+	glBegin(GL_TRIANGLE_STRIP);
+	if (isAbleToLeave || isAbleToBartendering || isAbleToPlayPiano || isAbleToUseJukebox)
+		glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	else
+		glColor3f(1, 1, 1);
+	glVertex3f(-1 + position.x, -1 + position.y, 17 + position.z);
+	glVertex3f(1 + position.x, -1 + position.y, 17 + position.z);
+	glVertex3f(position.x, position.y, position.z);
+	glEnd();
+}
+
+class button
+{
+	Point3D position;
+	float width;
+	float height;
+	bool* value;
+	float color_passive[3];
+	float color_active[3];
+	Point hitbox[4];
+
+public:
+
+	button() {}
+
+	button(float x, float y, float z, float width, float height, bool* value, float color_p[3], float color_a[3], Point hitbox_of_button[4]) :width(width), height(height), value(value)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			color_passive[i] = color_p[i];
+			color_active[i] = color_a[i];
+		}
+		for (int i = 0; i < 4; i++)
+			hitbox[i] = hitbox_of_button[i];
+		position.x = x;
+		position.y = y;
+		position.z = z;
+	}
+
+	void DrawButton();
+
+	void isClicked(int x, int y);
+};
+
+void button::DrawButton()
+{
+	glBegin(GL_QUAD_STRIP);
+	if (*value)
+		glColor4d(color_active[0], color_active[1], color_active[2], 0.8);
+	else
+		glColor4d(color_passive[0], color_passive[1], color_passive[1], 0.8);
+	glVertex3f(position.x, position.y, position.z);
+	glVertex3f(position.x, position.y, position.z + height);
+	glVertex3f(position.x, position.y + width, position.z);
+	glVertex3f(position.x, position.y + width, position.z + height);
+	glEnd();
+}
+
+void button::isClicked(int x, int y)
+{
+	if (IsPointInsidePolygon(hitbox, 4, x, y))
+		if (*value)
+			*value = false;
+		else
+			*value = true;
+}
+
+class active_bottle
+{
+protected:
+	Point3D initial_position;
+	Point3D current_position;
+	float initial_angle;
+	float current_angle;
+	int type;
+	float height;
+	float color_of_bottle[3];
+	bool isBottleCatched;
+
+	Point hitbox_of_bottle[10];
+	int count_of_points_in_hitbox;
+
+	float true_height;
+
+public:
+	active_bottle() {}
+
+	active_bottle(float x, float y, float z, float angle, int type, float height, float color_r, float color_g, float color_b, Point hitbox[10], int count_of_points, float true_height) : initial_angle(angle), type(type), height(height), true_height(true_height)
+	{
+		initial_position.x = x;
+		initial_position.y = y;
+		initial_position.z = z;
+		current_position.x = x;
+		current_position.y = y;
+		current_position.z = z;
+		color_of_bottle[0] = color_r;
+		color_of_bottle[1] = color_g;
+		color_of_bottle[2] = color_b;
+		isBottleCatched = false;
+		count_of_points_in_hitbox = count_of_points;
+		for (int i = 0; i < count_of_points_in_hitbox; i++)
+			hitbox_of_bottle[i] = hitbox[i];
+	}
+
+	void DrawActiveBottle();
+
+	void CheckIfClickedOnBottle(int x, int y);
+
+	virtual void ChangePosition(int mouse_x, int mouse_y);
+
+	void ChangeAngle(int mouse_initial_x, int mouse_initial_y, int mouse_current_x, int mouse_current_y);
+
+	void ReturnToInitialAngle();
+
+	bool isBottleActive();
+
+	float GetCurrentAngle();
+
+	float GetTrueHeight();
+
+	Point3D GetCurrentPosition();
+
+	Point3D GetInitialPosition();
+
+	void ReturnToInitialPosition();
+};
+
+void active_bottle::DrawActiveBottle()
+{
+	glPushMatrix();
+	if (isBottleCatched)
+	{
+		glTranslatef(current_position.x, current_position.y, current_position.z);
+		glRotatef(current_angle, 1, 0, 0);
+	}
+	else
+		glTranslatef(initial_position.x, initial_position.y, initial_position.z);
+	switch (type)
+	{
+	case 1:
+		glPushMatrix();
+		glScalef(0.5, 0.5, 0.5);
+		DrawBottleType1(height, color_of_bottle);
+		glPopMatrix();
+		break;
+	case 2:
+		glPushMatrix();
+		glScalef(0.5, 0.5, 0.5);
+		DrawBottleType2(height, color_of_bottle);
+		glPopMatrix();
+		break;
+	case 3:
+		glPushMatrix();
+		glScalef(0.5, 0.5, 0.5);
+		DrawBottleType3(height, color_of_bottle);
+		glPopMatrix();
+		break;
+	}
+	glPopMatrix();
+}
+
+bool isLeftButtonPressed, isLeftButtonJustReleased;
+
+void active_bottle::CheckIfClickedOnBottle(int x, int y)
+{
+	if (!isLeftButtonPressed)
+	{
+		isBottleCatched = IsPointInsidePolygon(hitbox_of_bottle, count_of_points_in_hitbox, x, y);
+		printf(isBottleCatched ? "catch" : "fali");
+		if (isBottleCatched)
+			current_angle = initial_angle;
+	}
+}
+
+void active_bottle::ReturnToInitialPosition()
+{
+	current_position.x = initial_position.x;
+	current_position.y = initial_position.y;
+	current_position.z = initial_position.z;
+	isBottleCatched = false;
+}
+
+bool active_bottle::isBottleActive()
+{
+	return isBottleCatched;
+}
+
+void active_bottle::ChangePosition(int mouse_x, int mouse_y)
+{
+	Point3D world_coords;
+	GetOGLPos(world_coords, mouse_x, mouse_y);
+	current_position.x = world_coords.x;
+	if (current_position.x >= 22.5)
+		current_position.x = 22.5;
+	current_position.y = world_coords.y;
+	current_position.z = world_coords.z;
+	printf("%f %f\n", current_position.y, current_position.z);
+}
+
+void active_bottle::ChangeAngle(int mouse_initial_x, int mouse_initial_y, int mouse_current_x, int mouse_current_y)
+{
+	float distantion = sqrt(pow(mouse_initial_x - mouse_current_x, 2) + pow(mouse_initial_y - mouse_current_y, 2));
+	if (distantion > 300)
+		distantion = 300;
+	if (mouse_initial_x < mouse_current_x)
+		current_angle = -180 * distantion / 300.;
+	else
+		current_angle = 180 * distantion / 300.;
+}
+
+void active_bottle::ReturnToInitialAngle()
+{
+	current_angle = initial_angle;
+}
+
+float active_bottle::GetCurrentAngle()
+{
+	return current_angle;
+}
+
+float active_bottle::GetTrueHeight()
+{
+	return true_height;
+}
+
+Point3D active_bottle::GetCurrentPosition()
+{
+	return current_position;
+}
+
+Point3D active_bottle::GetInitialPosition()
+{
+	return initial_position;
+}
+
+class alco_drop
+{
+	Point3D position;
+
+public:
+	alco_drop() {}
+
+	alco_drop(float x, float y, float z)
+	{
+		position.x = x;
+		position.y = y;
+		position.z = z;
+	}
+
+	void DrawAlcoDrop();
+};
+
+void alco_drop::DrawAlcoDrop()
+{
+	glPushMatrix();
+	glTranslatef(position.x, position.y, position.z);
+	glColor3d(1, 0, 0);
+	glutSolidSphere(0.03, 10, 10);
+	glPopMatrix();
+
+	position.z -= 2;					//временно
+}
+
+class active_shaker :public active_bottle
+{
+	float height;
+	float total_distance;
+	int state;
+	Point old_position;
+	Point new_position;
+	int index_of_drink;
+
+public:
+	active_shaker() {}
+
+	active_shaker(float x, float y, float z, float height, float angle, Point hitbox[10], int count_of_points) :height(height)
+	{
+		active_bottle::initial_position.x = x;
+		active_bottle::initial_position.y = y;
+		active_bottle::initial_position.z = z;
+		active_bottle::initial_angle = angle;
+		active_bottle::count_of_points_in_hitbox = count_of_points;
+		active_bottle::isBottleCatched = false;
+		active_bottle::current_position.x = x;
+		total_distance = 0;
+		state = 0;
+		index_of_drink = -1;
+		for (int i = 0; i < count_of_points_in_hitbox; i++)
+			active_bottle::hitbox_of_bottle[i] = hitbox[i];
+	}
+
+	void DrawActiveShaker();
+
+	void StartCountingPath(int x, int y);
+
+	void ChangeState(int x, int y);
+
+	void ChangePosition(int mouse_x, int mouse_y);
+
+	void TryToDetermineDrink(drink drinktionary[30], int len_of_drinktionary);
+
+	void Reset();
+
+	int GetResultDrinkIndex();
+};
+
+int active_shaker::GetResultDrinkIndex()
+{
+	return index_of_drink;
+}
+
+void active_shaker::Reset()
+{
+	index_of_drink = -1;
+	total_distance = 0;
+	state = 0;
+}
+
+void active_shaker::StartCountingPath(int x,int y)
+{
+	new_position.x = x;
+	new_position.y = y;
+}
+
+void active_shaker::TryToDetermineDrink(drink drinktionary[30], int len_of_drinktionary)
+{
+	int statement_of_shaker[8];
+	shaker_cont.GetAllComponentsToCheck(statement_of_shaker);
+	index_of_drink = -1;
+	for (int i = 0; i < len_of_drinktionary; i++)
+	{
+		//printf("\n%d\n", statement_of_shaker[7]);
+		if (statement_of_shaker[0] == drinktionary[i].red &&
+			statement_of_shaker[1] == drinktionary[i].yellow &&
+			statement_of_shaker[2] == drinktionary[i].blue &&
+			statement_of_shaker[3] == drinktionary[i].green &&
+			statement_of_shaker[5] == drinktionary[i].ice &&
+			statement_of_shaker[6] == drinktionary[i].age &&
+			statement_of_shaker[7] == drinktionary[i].state)
+		{
+			if (!drinktionary[i].OptKarmotrine)
+			{
+				if (statement_of_shaker[3] == drinktionary[i].green)
+				{
+					index_of_drink = i;
+					break;
+				}
+			}
+			else
+			{
+				index_of_drink = i;
+				break;
+			}
+		}
+	}
+}
+
+void active_shaker::ChangePosition(int mouse_x, int mouse_y)
+{
+	Point3D world_coords;
+	GetOGLPos(world_coords, mouse_x, mouse_y);
+	current_position.x = world_coords.x;
+	if (current_position.x >= 22.5)
+		current_position.x = 22.5;
+	current_position.y = world_coords.y;
+	current_position.z = world_coords.z;
+	printf("%f %f\n", current_position.y, current_position.z);
+
+	ChangeState(mouse_x, mouse_y);
+	TryToDetermineDrink(drinktionary, len_of_drinktionary);
+}
+
+
+void active_shaker::ChangeState(int x, int y)
+{
+	old_position = new_position;
+	new_position.x = x;
+	new_position.y = y;
+	total_distance += GetDistance(old_position, new_position);
+	printf("%f\n %d",total_distance,state);
+	if (total_distance > 4000)
+		state = 2;
+	else if (total_distance > 1800)
+		state = 1;
+	switch (state)
+	{case 0:
+		shaker_cont.SetShake(0);
+		shaker_cont.SetHardShake(0);
+		break;
+	case 1:
+		shaker_cont.SetShake(1);
+		shaker_cont.SetHardShake(0);
+		break;
+	case 2:
+		shaker_cont.SetShake(0);
+		shaker_cont.SetHardShake(1);
+		break;
+	}
+}
+
+
+
+void active_shaker::DrawActiveShaker()
+{
+	Point bottom_circle_points[360];
+	Point header_circle_points[360];
+	Point cap_circle_points[360];
+
+	
+
+	Point3D position = active_bottle::isBottleCatched ? active_bottle::current_position : active_bottle::initial_position;
+	float indicator_color[3];
+	switch (state)
+	{
+	case 0:
+			indicator_color[0] = 78 / 255.;
+			indicator_color[1] = 67 / 255.;
+			indicator_color[2] = 71 / 255.;
+		break;
+	case 1:
+		indicator_color[0] = 234 / 255.;
+		indicator_color[1] = 128 / 255.;
+		indicator_color[2] = 107 / 255.;
+		break;
+	case 2:
+		indicator_color[0] = 1;
+		indicator_color[1] = 0;
+		indicator_color[2] = 0;
+		break;
+	}
+
+	glPushMatrix();
+	if (index_of_drink != -1)
+		glColor4d(234 / 255., 128 / 255., 107 / 255., 1);
+	glRasterPos3f(position.x, position.y-1, position.z+2.3);
+	if (index_of_drink == -1)
+		barFont->Render("???");
+	else
+		barFont->Render(drinktionary[index_of_drink].name);
+	glPopMatrix();
+
+
+	glPushMatrix();
+	if (isBottleCatched)
+	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(current_angle, 1, 0, 0);
+		glTranslatef(-position.x, -position.y, -position.z);
+	}
+
+	if (isBottleCatched)
+	{
+		glPushMatrix();									//средн€€ часть
+		glTranslatef(position.x, position.y - 0.5, height + position.z);
+		glScalef(0.4, 0.4, height / 2 - 0.2);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glutSolidSphere(1, 10, 10);
+		glPopMatrix();
+	}
+	else
+	{
+		glPushMatrix();									//средн€€ часть (но когда шейкер неактивен
+		glTranslatef(position.x - 2, position.y - 1.5, position.z);
+		glScalef(0.4, 0.4, height / 2 - 0.2);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glutSolidSphere(1, 10, 10);
+		glPopMatrix();
+	}
+
+
+	glPushMatrix();
+	glTranslatef(0, 0, position.z);
+
+	center_of_circle.x = position.x;										//нижн€€ часть
+	center_of_circle.y = position.y - 0.5;
+	GetCircle(circle_points, center_of_circle, 0.4);
+	GetCircle(bottom_circle_points, center_of_circle, 0.3);
+
+	for (int i = 0; i < 359; i++)
+	{
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(bottom_circle_points[i].x, bottom_circle_points[i].y, 0);
+		glVertex3f(center_of_circle.x, center_of_circle.y, 0);
+		glVertex3f(bottom_circle_points[i + 1].x, bottom_circle_points[i + 1].y, 0);
+		glEnd();
+	}
+	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(-2, 4, 0);
+	glColor3d(78 / 255., 67 / 255., 71 / 255.);
+	glVertex3f(bottom_circle_points[0].x, bottom_circle_points[0].y, 0);
+	glVertex3f(center_of_circle.x, center_of_circle.y, 0);
+	glVertex3f(bottom_circle_points[359].x, bottom_circle_points[359].y, 0);
+	glEnd();
+
+
+	for (int i = 0; i < 359; i++)
+	{
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(circle_points[i].x, circle_points[i].y, height);
+		glVertex3f(bottom_circle_points[i].x, bottom_circle_points[i].y, 0);
+		glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height);
+		glVertex3f(bottom_circle_points[i + 1].x, bottom_circle_points[i + 1].y, 0);
+		glEnd();
+	}
+
+	glBegin(GL_QUAD_STRIP);
+	glColor3d(78 / 255., 67 / 255., 71 / 255.);
+	glNormal3f(-2, 4, 0);
+	glVertex3f(circle_points[0].x, circle_points[0].y, height);
+	glVertex3f(bottom_circle_points[0].x, bottom_circle_points[0].y, 0);
+	glVertex3f(circle_points[359].x, circle_points[359].y, height);
+	glVertex3f(bottom_circle_points[359].x, circle_points[359].y, 0);
+	glEnd();
+
+
+
+	if (isBottleCatched)
+	{
+		GetCircle(header_circle_points, center_of_circle, 0.1);
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(indicator_color[0], indicator_color[1], indicator_color[2]);
+			glVertex3f(circle_points[i].x, circle_points[i].y, height);
+			glVertex3f(center_of_circle.x, center_of_circle.y, height);
+			glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(circle_points[0].x, circle_points[0].y, height);
+		glVertex3f(center_of_circle.x, center_of_circle.y, height);
+		glVertex3f(circle_points[359].x, circle_points[359].y, height);
+		glEnd();
+
+		for (int i = 0; i < 359; i++)					//верхн€€ часть
+		{
+			glBegin(GL_QUAD_STRIP);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glNormal3f(-2, 4, 0);
+			glVertex3f(header_circle_points[i].x, header_circle_points[i].y, height * 3 / 2.);
+			glVertex3f(header_circle_points[i].x, header_circle_points[i].y, 0);
+			glVertex3f(header_circle_points[i + 1].x, header_circle_points[i + 1].y, height * 3 / 2.);
+			glVertex3f(header_circle_points[i + 1].x, header_circle_points[i + 1].y, 0);
+			glEnd();
+		}
+
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(header_circle_points[0].x, header_circle_points[0].y, height * 3 / 2.);
+		glVertex3f(header_circle_points[0].x, header_circle_points[0].y, 0);
+		glVertex3f(header_circle_points[359].x, header_circle_points[359].y, height * 3 / 2.);
+		glVertex3f(header_circle_points[359].x, header_circle_points[359].y, 0);
+		glEnd();
+
+		GetCircle(cap_circle_points, center_of_circle, 0.12);
+
+
+		for (int i = 0; i < 359; i++)					//крышка
+		{
+			glBegin(GL_QUAD_STRIP);
+			glColor3d(indicator_color[0], indicator_color[1], indicator_color[2]);
+			glNormal3f(-2, 4, 0);
+			glVertex3f(cap_circle_points[i].x, cap_circle_points[i].y, height * 3 / 2.);
+			glVertex3f(cap_circle_points[i].x, cap_circle_points[i].y, height * 3 / 2. - 0.1);
+			glVertex3f(cap_circle_points[i + 1].x, cap_circle_points[i + 1].y, height * 3 / 2.);
+			glVertex3f(cap_circle_points[i + 1].x, cap_circle_points[i + 1].y, height * 3 / 2. - 0.1);
+			glEnd();
+		}
+
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(cap_circle_points[0].x, cap_circle_points[0].y, height * 3 / 2.);
+		glVertex3f(cap_circle_points[0].x, cap_circle_points[0].y, height * 3 / 2. - 0.1);
+		glVertex3f(cap_circle_points[359].x, cap_circle_points[359].y, height * 3 / 2.);
+		glVertex3f(cap_circle_points[359].x, cap_circle_points[359].y, height * 3 / 2. - 0.1);
+		glEnd();
+
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glVertex3f(cap_circle_points[i].x, cap_circle_points[i].y, height * 3 / 2.);
+			glVertex3f(center_of_circle.x, center_of_circle.y, height * 3 / 2.);
+			glVertex3f(cap_circle_points[i + 1].x, cap_circle_points[i + 1].y, height * 3 / 2.);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(cap_circle_points[0].x, cap_circle_points[0].y, height * 3 / 2.);
+		glVertex3f(center_of_circle.x, center_of_circle.y, height * 3 / 2.);
+		glVertex3f(cap_circle_points[359].x, cap_circle_points[359].y, height * 3 / 2.);
+		glEnd();
+
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glVertex3f(cap_circle_points[i].x, cap_circle_points[i].y, height * 3 / 2. - 0.1);
+			glVertex3f(center_of_circle.x, center_of_circle.y, height * 3 / 2. - 0.1);
+			glVertex3f(cap_circle_points[i + 1].x, cap_circle_points[i + 1].y, height * 3 / 2. - 0.1);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(cap_circle_points[0].x, cap_circle_points[0].y, height * 3 / 2. - 0.1);
+		glVertex3f(center_of_circle.x, center_of_circle.y, height * 3 / 2. - 0.1);
+		glVertex3f(cap_circle_points[359].x, cap_circle_points[359].y, height * 3 / 2. - 0.1);
+		glEnd();
+	}
+	else
+	{
+		GetCircle(header_circle_points, center_of_circle, 0.1);
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glVertex3f(circle_points[i].x - 2, circle_points[i].y - 1, 0);
+			glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, 0);
+			glVertex3f(circle_points[i + 1].x - 2, circle_points[i + 1].y - 1, 0);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(circle_points[0].x - 2, circle_points[0].y - 1, 0);
+		glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, 0);
+		glVertex3f(circle_points[359].x - 2, circle_points[359].y - 1, 0);
+		glEnd();
+
+		for (int i = 0; i < 359; i++)					//верхн€€ часть
+		{
+			glBegin(GL_QUAD_STRIP);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glNormal3f(-2, 4, 0);
+			glVertex3f(header_circle_points[i].x - 2, header_circle_points[i].y - 1, height * 1 / 2.);
+			glVertex3f(header_circle_points[i].x - 2, header_circle_points[i].y - 1, 0);
+			glVertex3f(header_circle_points[i + 1].x - 2, header_circle_points[i + 1].y - 1, height * 1 / 2.);
+			glVertex3f(header_circle_points[i + 1].x - 2, header_circle_points[i + 1].y - 1, 0);
+			glEnd();
+		}
+
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(header_circle_points[0].x - 2, header_circle_points[0].y - 1, height * 1 / 2.);
+		glVertex3f(header_circle_points[0].x - 2, header_circle_points[0].y - 1, 0);
+		glVertex3f(header_circle_points[359].x - 2, header_circle_points[359].y - 1, height * 1 / 2.);
+		glVertex3f(header_circle_points[359].x - 2, header_circle_points[359].y - 1, 0);
+		glEnd();
+
+		GetCircle(cap_circle_points, center_of_circle, 0.12);
+
+
+		for (int i = 0; i < 359; i++)					//крышка
+		{
+			glBegin(GL_QUAD_STRIP);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glNormal3f(-2, 4, 0);
+			glVertex3f(cap_circle_points[i].x - 2, cap_circle_points[i].y - 1, height * 1 / 2.);
+			glVertex3f(cap_circle_points[i].x - 2, cap_circle_points[i].y - 1, height * 1 / 2. - 0.1);
+			glVertex3f(cap_circle_points[i + 1].x - 2, cap_circle_points[i + 1].y - 1, height * 1 / 2.);
+			glVertex3f(cap_circle_points[i + 1].x - 2, cap_circle_points[i + 1].y - 1, height * 1 / 2. - 0.1);
+			glEnd();
+		}
+
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(cap_circle_points[0].x - 2, cap_circle_points[0].y - 1, height * 1 / 2.);
+		glVertex3f(cap_circle_points[0].x - 2, cap_circle_points[0].y - 1, height * 1 / 2. - 0.1);
+		glVertex3f(cap_circle_points[359].x - 2, cap_circle_points[359].y - 1, height * 1 / 2.);
+		glVertex3f(cap_circle_points[359].x - 2, cap_circle_points[359].y - 1, height * 1 / 2. - 0.1);
+		glEnd();
+
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glVertex3f(cap_circle_points[i].x - 2, cap_circle_points[i].y - 1, height * 1 / 2.);
+			glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, height * 1 / 2.);
+			glVertex3f(cap_circle_points[i + 1].x - 2, cap_circle_points[i + 1].y - 1, height * 1 / 2.);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(cap_circle_points[0].x - 2, cap_circle_points[0].y - 1, height * 1 / 2.);
+		glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, height * 1 / 2.);
+		glVertex3f(cap_circle_points[359].x - 2, cap_circle_points[359].y - 1, height * 1 / 2.);
+		glEnd();
+
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_TRIANGLE_STRIP);
+			glNormal3f(-2, 4, 0);
+			glColor3d(78 / 255., 67 / 255., 71 / 255.);
+			glVertex3f(cap_circle_points[i].x - 2, cap_circle_points[i].y - 1, height * 1 / 2. - 0.1);
+			glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, height * 1 / 2. - 0.1);
+			glVertex3f(cap_circle_points[i + 1].x - 2, cap_circle_points[i + 1].y - 1, height * 1 / 2. - 0.1);
+			glEnd();
+		}
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor3d(78 / 255., 67 / 255., 71 / 255.);
+		glVertex3f(cap_circle_points[0].x - 2, cap_circle_points[0].y - 1, height * 1 / 2. - 0.1);
+		glVertex3f(center_of_circle.x - 2, center_of_circle.y - 1, height * 1 / 2. - 0.1);
+		glVertex3f(cap_circle_points[359].x - 2, cap_circle_points[359].y - 1, height * 1 / 2. - 0.1);
+		glEnd();
+	}
+	glPopMatrix();
+	glPopMatrix();
+}
+
+class active_glass :public active_bottle
+{
+	float height;
+
+	
+	float color_of_drink[3];
+
+
+
+public:
+	bool isFilled;
+
+	active_glass() {}
+
+	active_glass(float x, float y, float z, float height, float angle, Point hitbox[10], int count_of_points) :height(height)
+	{
+		active_bottle::initial_position.x = x;
+		active_bottle::initial_position.y = y;
+		active_bottle::initial_position.z = z;
+		active_bottle::initial_angle = angle;
+		active_bottle::count_of_points_in_hitbox = count_of_points;
+		active_bottle::isBottleCatched = false;
+		active_bottle::current_position.x = x;
+		isFilled = false;
+		for (int i = 0; i < count_of_points_in_hitbox; i++)
+			active_bottle::hitbox_of_bottle[i] = hitbox[i];
+	}
+
+	void DrawActiveGlass();
+
+	void CalculateColorOfDrink();
+};
+
+void active_glass::CalculateColorOfDrink()
+{
+	int shaker_components[6];
+	float count_of_components;
+	shaker_cont.GetComponentsToShow(shaker_components);
+	color_of_drink[0] = (float)(shaker_components[0] + shaker_components[2] + shaker_components[3]) / shaker_components[5];
+	color_of_drink[1] = (float)(shaker_components[2] + shaker_components[3] + shaker_components[4]) / shaker_components[5];
+	color_of_drink[2] = (float)(shaker_components[1]) / shaker_components[5];
+}
+
+void active_glass::DrawActiveGlass()
+{
+
+	Point3D position = active_bottle::isBottleCatched ? active_bottle::current_position : active_bottle::initial_position;
+
+	
+	
+
+	glPushMatrix();
+	if (isBottleCatched)
+	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(current_angle, 1, 0, 0);
+		glTranslatef(-position.x, -position.y, -position.z);
+	}
+
+	glPushMatrix();
+	glTranslatef(0, 0, position.z);
+
+	center_of_circle.x = position.x;
+	center_of_circle.y = position.y - 0.5;
+
+	if (isFilled)
+	{
+		
+		CalculateColorOfDrink();
+		GetCircle(circle_points, center_of_circle, 0.39);
+
+		for (int i = 0; i < 359; i++)
+		{
+			glBegin(GL_QUAD_STRIP);
+			glColor3d(color_of_drink[0], color_of_drink[1], color_of_drink[2]);
+			glNormal3f(-2, 4, 0);
+			glVertex3f(circle_points[i].x, circle_points[i].y, height-0.1);
+			glVertex3f(circle_points[i].x, circle_points[i].y, height*0.1);
+			glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height-0.1);
+			glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height*0.1);
+			glEnd();
+		}
+
+		glBegin(GL_QUAD_STRIP);
+		glColor3d(color_of_drink[0], color_of_drink[1], color_of_drink[2]);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(circle_points[0].x, circle_points[0].y, height-0.1);
+		glVertex3f(circle_points[0].x, circle_points[0].y, height*0.1);
+		glVertex3f(circle_points[359].x, circle_points[359].y, height-0.1);
+		glVertex3f(circle_points[359].x, circle_points[359].y, height*0.1);
+		glEnd();
+	}
+
+	GetCircle(circle_points, center_of_circle, 0.4);
+
+	for (int i = 0; i < 359; i++)
+	{
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+		glVertex3f(circle_points[i].x, circle_points[i].y, 0);
+		glVertex3f(center_of_circle.x, center_of_circle.y, 0);
+		glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, 0);
+		glEnd();
+	}
+	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(-2, 4, 0);
+	glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+	glVertex3f(circle_points[0].x, circle_points[0].y, 0);
+	glVertex3f(center_of_circle.x, center_of_circle.y, 0);
+	glVertex3f(circle_points[359].x, circle_points[359].y, 0);
+	glEnd();
+
+	for (int i = 0; i < 359; i++)
+	{
+		glBegin(GL_TRIANGLE_STRIP);
+		glNormal3f(-2, 4, 0);
+		glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+		glVertex3f(circle_points[i].x, circle_points[i].y, height*0.1);
+		glVertex3f(center_of_circle.x, center_of_circle.y, height*0.1);
+		glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height*0.1);
+		glEnd();
+	}
+	glBegin(GL_TRIANGLE_STRIP);
+	glNormal3f(-2, 4, 0);
+	glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+	glVertex3f(circle_points[0].x, circle_points[0].y, height*0.1);
+	glVertex3f(center_of_circle.x, center_of_circle.y, height*0.1);
+	glVertex3f(circle_points[359].x, circle_points[359].y, height*0.1);
+	glEnd();
+
+
+	for (int i = 0; i < 359; i++)
+	{
+		glBegin(GL_QUAD_STRIP);
+		glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+		glNormal3f(-2, 4, 0);
+		glVertex3f(circle_points[i].x, circle_points[i].y, height);
+		glVertex3f(circle_points[i].x, circle_points[i].y, 0);
+		glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, height);
+		glVertex3f(circle_points[i + 1].x, circle_points[i + 1].y, 0);
+		glEnd();
+	}
+
+	glBegin(GL_QUAD_STRIP);
+	glColor4d(81 / 255., 78 / 255., 111 / 255., 0.8);
+	glNormal3f(-2, 4, 0);
+	glVertex3f(circle_points[0].x, circle_points[0].y, height);
+	glVertex3f(circle_points[0].x, circle_points[0].y, 0);
+	glVertex3f(circle_points[359].x, circle_points[359].y, height);
+	glVertex3f(circle_points[359].x, circle_points[359].y, 0);
+	glEnd();
+
+	
+
+	glPopMatrix();
+	glPopMatrix();
+}
+
+class scriptprocessor
+{
+	scriptline *script;
+	int current_chapter;
+	int length_of_script;
+	int reading_pointer;
+	int current_drink_index;
+	int counter_of_chars;
+	bool isNeedToGo;
+
+	WCHAR* Talker;
+	WCHAR* Talk;
+
+
+
+	void InterpretateLoadNextFile();
+	void InterpretateStartBartendering();
+	int InterpretateJump(int line_number);
+	int InterpretateJump(char mark[30]);
+	int InterpretateIfDrink(int line_number, int current_drink_index);
+	bool InterpretateLineOfScript();
+	void DivideScriptLineToFunctionAndArguments(char line[1000], scriptline& line_of_code);
+	void ReadScriptFromFile();
+
+	void ChangeSpeech();
+
+	void DrawVNwindow();
+	void DrawBartendering();
+
+public:
+	scriptprocessor()
+	{
+		script = NULL;
+		current_chapter = 0;
+		length_of_script = 0;
+		reading_pointer = -1;
+		current_drink_index = -1;
+		counter_of_chars = 0;
+		isNeedToGo = true;
+		ReadScriptFromFile();
+	}
+
+	void SpacePressed();
+	void DrawTextComponent();
+};
+
+void scriptprocessor::SpacePressed()
+{
+	isNeedToGo = true;
+}
+
+void scriptprocessor::ChangeSpeech()
+{
+	counter_of_chars = 0;
+
+	char name_of_talker[30];
+	for (int i = 1; i < strlen(script[reading_pointer].function); i++)
+		name_of_talker[i - 1] = script[reading_pointer].function[i];
+
+	size_t size = strlen(name_of_talker) + 1;
+	Talker = new wchar_t[size];
+	size_t outSize;
+	mbstowcs_s(&outSize, Talker, size, name_of_talker, size - 1);
+
+	size = strlen(script[reading_pointer].arguments) + 1;
+	Talk = new wchar_t[size];
+	mbstowcs_s(&outSize, Talk, size, script[reading_pointer].arguments, size - 1);
+}
+
+void scriptprocessor::DrawVNwindow()
+{
+	glBegin(GL_QUAD_STRIP);
+	glColor4d(0, 0, 0, 0.8);
+	glVertex3f(24, 0, 11);
+	glVertex3f(24, 36, 11);
+	glVertex3f(24, 0, 14);
+	glVertex3f(24, 36, 14);
+	glEnd();
+
+	glColor3f(223 / 255., 133 / 255., 123 / 255.);
+	DrawCharName(Talker);
+	if (Talk[counter_of_chars] != '\0')
+		counter_of_chars++;
+	glColor3f(1, 1, 1);
+	DrawComplexTalk(Talk, counter_of_chars);
+}
+
+void scriptprocessor::DrawBartendering()
+{
+	shaker.DrawActiveShaker();
+	for (int i = 0; i < 5; i++)
+	{
+		if (i < 3)
+			active_bottles[i].DrawActiveBottle();
+		else
+		{
+			glPushMatrix();
+			Point3D pos = active_bottles[i].isBottleActive() ? active_bottles[i].GetCurrentPosition() : active_bottles[i].GetInitialPosition();
+			glTranslatef(pos.x, pos.y, pos.z);
+			if (i == 4)
+				glRotatef(3, 1, 0, 0);
+			else
+				glRotatef(2, 1, 0, 0);
+			glTranslatef(-pos.x, -pos.y, -pos.z);
+			active_bottles[i].DrawActiveBottle();
+			glPopMatrix();
+		}
+	}
+
+	IceButton.DrawButton();
+	AgeButton.DrawButton();
+	EraseButton.DrawButton();
+	if (glass.isFilled)
+		ServeButton.DrawButton();
+
+	shaker_cont.SetIce(addIce);
+	shaker_cont.SetAge(addAge);
+
+	if (resetDrink)
+	{
+		shaker_cont.Reset();
+		shaker.Reset();
+		addIce = false;
+		addAge = false;
+		glass.isFilled = false;
+	}
+
+	resetDrink = false;
+	if (serve)
+	{
+		printf("Drink index:%d\n", shaker.GetResultDrinkIndex());
+		isNeedToGo = true;
+		current_drink_index = shaker.GetResultDrinkIndex();
+		counter_of_chars = 0;
+	}
+	serve = false;
+
+	glBegin(GL_QUAD_STRIP);
+	glColor4d(0, 0, 0, 0.8);
+	glVertex3f(22.5, 8.5, 11);
+	glVertex3f(22.5, 36, 11);
+	glVertex3f(20.5, 8.5, 30);
+	glVertex3f(20.5, 36, 30);
+	glEnd();
+
+	glBegin(GL_QUAD_STRIP);
+	glColor4d(0, 0, 0, 0);
+	glVertex3f(22.5, 8.5, 11);
+	glVertex3f(22.5, 0, 11);
+	glVertex3f(20.5, 8.5, 30);
+	glVertex3f(20.5, 0, 30);
+	glEnd();
+
+	ChangePositionOfObjectsDuringLeftMousePress(leftclickedmouse_x, leftclickedmouse_y);
+
+	glColor3d(1, 1, 1);
+	DrawBarTitles();
+}
+
+
+void scriptprocessor::DrawTextComponent()
+{
+	if (isBartenderingModeOn)
+	{
+		if (isNeedToGo)
+		{
+			reading_pointer++;
+			while (!InterpretateLineOfScript())
+				;
+			isNeedToGo = false;
+		}
+		if (isVNModeOn)
+			DrawVNwindow();
+		else
+			DrawBartendering();
+	}
+}
+
+void scriptprocessor::InterpretateLoadNextFile()
+{
+	current_chapter = atoi(script[reading_pointer].arguments);
+	ReadScriptFromFile();
+}
+
+
+
+void scriptprocessor::InterpretateStartBartendering()
+{
+	shaker.Reset();
+	shaker_cont.Reset();
+	addIce = false;
+	addAge = false;
+	glass.isFilled = false;
+	isVNModeOn = false;
+}
+
+int scriptprocessor::InterpretateJump(int line_number)
+{
+	char catcher[30];
+	strcpy(catcher, script[line_number].function);
+	catcher[0] = '#';
+	for (int i = 0; i < length_of_script; i++)
+		if (!strcmp(script[i].function, catcher))
+			return i + 1;
+}
+
+int scriptprocessor::InterpretateJump(char mark[30])
+{
+	char catcher[30];
+	strcpy(catcher, mark);
+	catcher[0] = '#';
+	for (int i = 0; i < length_of_script; i++)
+		if (!strcmp(script[i].function, catcher))
+			return i + 1;
+}
+
+int scriptprocessor::InterpretateIfDrink(int line_number, int current_drink_index)
+{
+	int i = 0;
+	int j;
+	int needed_drink;
+	char needed_drink_str[4];
+	char mark_to_follow[30];
+	while (script[line_number].arguments[i] != ' ')
+	{
+		needed_drink_str[i] = script[line_number].arguments[i];
+		i++;
+	}
+	needed_drink_str[i] = '\0';
+	needed_drink = atoi(needed_drink_str);
+	i++;
+	if (needed_drink != current_drink_index)
+	{
+		while (script[line_number].arguments[i] != '|')
+			i++;
+		i++;
+	}
+	j = 0;
+	while (script[line_number].arguments[i] != '|' && script[line_number].arguments[i] != '\0')
+	{
+		mark_to_follow[j] = script[line_number].arguments[i];
+		i++;
+		j++;
+	}
+	return InterpretateJump(line_number);
+}
+
+bool scriptprocessor::InterpretateLineOfScript()
+{
+
+	if (!strcmp(script[reading_pointer].function, "?ifdrink"))
+	{
+		reading_pointer = InterpretateIfDrink(reading_pointer, current_drink_index);
+		return false;
+	}
+	else if (script[reading_pointer].function[0] == '^')
+	{
+		reading_pointer = InterpretateJump(script[reading_pointer].function);
+		return false;
+	}
+	else if (script[reading_pointer].function[0] == '#')
+	{
+		reading_pointer++;
+		return false;
+	}
+	else if (!strcmp(script[reading_pointer].function, "*bartendering"))
+	{
+		InterpretateStartBartendering();
+		return true;
+	}
+	else if (script[reading_pointer].function[0] == '$')
+	{
+		isVNModeOn = true;
+		ChangeSpeech();
+		return true;
+	}
+	else if (!strcmp(script[reading_pointer].function, "!load"))
+	{
+		InterpretateLoadNextFile();
+		return false;
+	}
+	else if (!strcmp(script[reading_pointer].function, "!end"))
+	{
+		isBartenderingModeOn = false;
+		return false;
+	}
+}
+
+void scriptprocessor::DivideScriptLineToFunctionAndArguments(char line[1000], scriptline& line_of_code)
+{
+	bool isFuncReaded = false;
+	int i = 0, j = 0;
+	char reading_char = line[i];
+	while (line[i] != '\0' && !isFuncReaded)
+	{
+		if (line[i] == ']')
+		{
+			isFuncReaded = true;
+			line_of_code.function[i] = '\0';
+		}
+		else
+			line_of_code.function[i] = line[i];
+		i++;
+	}
+	if (line[0] == '$')
+		ToLayoutFormat(line + sizeof(char)*i, line_of_code.arguments, 51);
+	else
+		for (int j = i; j < strlen(line); j++)
+		{
+			line_of_code.arguments[j] = i;
+			i++;
+		}
+}
+
+void scriptprocessor::ReadScriptFromFile()
+{
+	char filepath[20] = "script/ch", number_of_ch[2];
+	char current_char, current_line[1000];
+	int i = 0;
+
+	if (script != NULL)
+	{
+		free(script);
+		script = NULL;
+	}
+
+	FILE* script_file;
+	itoa(current_chapter, number_of_ch, 10);
+	strcat(filepath, number_of_ch);
+	strcat(filepath, ".txt");
+	script_file = fopen(filepath, "rt");
+	current_char = fgetc(script_file);
+	length_of_script = 0;
+	while (!feof(script_file))
+	{
+		if (current_char != '\n')
+		{
+			current_line[i] = current_char;
+			i++;
+			current_char = fgetc(script_file);
+		}
+		else
+		{
+			current_line[i] = '\0';
+			script = (scriptline*)realloc(script, (length_of_script + 1) * sizeof(scriptline));
+			DivideScriptLineToFunctionAndArguments(current_line, script[length_of_script]);
+			length_of_script++;
+			i = 0;
+			current_char = fgetc(script_file);
+		}
+	}
+	current_line[i] = '\0';
+	script = (scriptline*)realloc(script, (length_of_script + 1) * sizeof(scriptline));
+	DivideScriptLineToFunctionAndArguments(current_line, script[length_of_script]);
+	length_of_script++;
+
+	reading_pointer = -1;
+	isNeedToGo = true;
+
+	fclose(script_file);
+}

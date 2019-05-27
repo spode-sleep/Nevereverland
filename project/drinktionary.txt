@@ -1,0 +1,24 @@
+Zen_Star 4 4 4 4 4 1 0 1 0
+Bad_Touch 0 2 2 4 1 0 1 0
+Beer 1 2 1 2 4 0 0 1 0
+Bleeding_Jane 0 1 3 3 0 0 0 2 0
+Bloom_Light 4 1 2 3 1 1 1 0
+Blue_Fairy 4 0 0 1 0 0 1 1 1
+Brandtini 6 0 3 0 1 0 1 1 0
+Cobalt_Velvet 2 0 0 3 5 1 0 1 0
+Crevice_Spike 0 0 2 4 0 0 0 2 1
+Flaming_Moai 1 1 2 3 5 0 0 1 0
+Fluffy_Dream 3 0 3 0 0 0 1 1 1
+Fringe_Weaver 1 0 0 0 9 0 1 1 0
+Frothy_Water 1 1 1 1 0 0 1 1 0
+Grizzly_Temple 3 3 3 0 1 0 0 2 0
+Gut_Punch 0 5 0 1 0 0 1 1 1
+Marsblast 0 6 1 4 2 0 0 2 0
+Mercuryblast 1 1 3 3 2 1 0 2 0
+Moonblast 6 0 1 1 2 1 0 2 0
+Piano_Man 2 3 5 5 3 1 0 1 0
+Piano_Woman 5 5 2 3 3 0 1 1 0
+Pile_Driver 0 3 0 3 4 0 0 1 0
+Sparkle_Star 2 0 1 0 0 0 1 1 1
+Sugar_Rush 2 0 1 0 0 0 0 1 0
+Sunshine_Cloud 2 2 0 0 0 1 0 2 1
